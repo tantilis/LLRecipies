@@ -1,0 +1,30 @@
+﻿@model Common.Dto.Recipe
+
+
+<h3 class="recipeHeader">
+    @Model.Name
+</h3>
+
+<div>
+
+    <img src="@Url.Content(Model.ImageUrl)" />
+
+    <div id="ingredients">
+        <ul>
+            @foreach (var ing in Model.Ingredients)
+            {
+                <li>@ing.Name</li>
+            }
+        </ul>
+    </div>
+
+    <div id="instructions">
+        <ol>
+            @foreach (var inst in Model.Instructions.OrderBy(x => x.StepNumber))
+            {
+                <li>@inst.Description</li>
+            }
+        </ol>
+    </div>
+
+</div>

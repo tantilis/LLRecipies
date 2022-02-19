@@ -1,0 +1,111 @@
+﻿@model IEnumerable<Common.Dto.Recipe>
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            $("#tabs").tabs();
+
+            $('#filter').keyup(function () {
+                var fTxt = $('#filter').val().toLowerCase();
+
+                $("#recDescBlocks").accordion({
+                    active: false,
+                    collapsible: true
+                });
+
+                $('.recipeHeader').each(function () {
+                    var vTxt = $(this).text().toLowerCase();
+                    if (vTxt.indexOf(fTxt) > -1) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+
+            RenderControl.Recipies();
+        });
+
+        var RenderControl = {
+            Recipies: function () {
+                $.ajax({
+                    url: '/Home/GetRecipies',
+                    type: "GET",
+                    jsonpCallback: 'callback',
+                    contentType: "application/json",
+                    dataType: 'json',
+                    success: function (result) {
+                        //console.log(JSON.stringify(result));
+                        $.each(result, function (i, recipe) {
+                            //console.log(recipe.Name + ':' + recipe.Description);
+                            //console.log(recipe);
+                            var divContentId = 'divContent_' + i;
+                            var ingrId = 'ing_' + i;
+                            var instId = 'inst_' + i;
+
+                            $('#recDescBlocks').append('<h3 class="recipeHeader">' + recipe.name + '</h3>');
+                            $('#recDescBlocks').append('<div class="recContents" id="' + divContentId + '"/>');
+                            $('#' + divContentId).append('<img src=' + recipe.imageUrl + ' />');
+
+                            $('#' + divContentId).append('<ul id="' + ingrId + '"/>')
+                            $('#' + divContentId).append('<ol id="' + instId + '"/>')
+
+                            $.each(recipe.ingredients, function (j, ing) {
+                                $('#' + ingrId).append('<li>' + ing.name + '</li>');
+                            });
+
+                            $.each(recipe.instructions, function (j, inst) {
+                                $('#' + instId).append('<li>' + inst.description + '</li>');
+                            });
+                        });
+
+                        $("#recDescBlocks").accordion({
+                            active: false,
+                            collapsible: true
+                        });
+
+                    },
+                    error: function (err) {
+                        alert(err.statusText);
+                    }
+                });
+            }
+        };
+    </script>
+
+
+</head>
+
+<body>
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabs-1">Recipies</a></li>
+            <li><a href="#tabs-2">New Recipe</a></li>
+        </ul>
+
+        <div id="tabs-1">
+            <div>
+                <label for="filter">Filter Recipies:</label><input id="filter" type="text" />
+            </div>
+
+            <div id="recDescBlocks">
+           
+            </div>
+        </div>
+
+        <div id="tabs-2">
+            @Html.Partial("NewRecipe")
+        </div>
+    </div>
+</body>
+
+</html>

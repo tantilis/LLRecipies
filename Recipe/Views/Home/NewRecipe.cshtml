@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <style>
+        form div {
+            width: 450px;
+            padding: 10px;
+        }
+
+        #recDetails {
+            display: inline-block;
+            height: auto;
+            width: 50%;
+        }
+
+            #recDetails div {
+                width: 45%;
+                float: left;
+                border: 1px solid lightgrey;
+                margin: 5px;
+                display: block;
+            }
+    </style>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            $('#btnSubmit').click(function () {
+
+                if (window.FormData !== undefined) {
+                    var fd = new FormData();
+
+                    var name = $('#recName').val();
+                    var desc = $('#recDesc').val();
+
+                    fd.append('Name', name);
+                    fd.append('Description', desc);
+
+                    var recImg = $('#recImg').get(0);
+                    var files = recImg.files;
+
+                    fd.append(files[0].name, files[0]);
+
+                    var ingridients = $('#newIngredients li input');
+                    var ingArr = new Array();
+
+                    var steps = $('#newSteps li input');
+                    var stpArr = new Array();
+
+                    $.each(ingridients, function () {
+                        if($(this).val().length > 0)
+                        {
+                            ingArr.push($(this).val());
+                        }
+                    });
+
+                    $.each(steps, function () {
+                        if($(this).val().length > 0)
+                        {
+                            stpArr.push($(this).val());
+                        }
+                    });
+
+
+                    fd.append('Ingredients', ingArr);
+                    fd.append('Steps', stpArr);
+
+
+
+                    $.ajax({
+                        url: '/Home/SaveRecipe',
+                        type: "POST",
+                        contentType: false,
+                        processData: false,
+                        data: fd,
+                        success: function (result) {
+                            //alert(result);
+                        },
+                        error: function (err) {
+                            alert(err.statusText);
+                        }
+                    });
+                } else {
+                    alert('FormData not supported');
+                }
+            });
+        });
+    </script>
+
+</head>
+<body>
+    <form id="newRecipe" enctype="multipart/form-data">
+        <div>
+            <div>
+                <label for="recName">Title:</label> <input type="text" id="recName" name="Title" />
+            </div>
+            <div>
+                <label for="recDesc">Description:</label> <input type="text" id="recDesc" name="Description" />
+            </div>
+            <div>
+                <label for="recImg">Image:</label> <input type="file" id="recImg" name="Recipe Image" />
+            </div>
+        </div>
+        <div id="recDetails">
+            <div>
+                Ingredients
+                <ul id="newIngredients">
+                    <li>
+                        <input type="text" />
+                    </li>
+                    <li>
+                        <input type="text" />
+                    </li>
+                    <li>
+                        <input type="text" />
+                    </li>
+                    <li>
+                        <input type="text" />
+                    </li>
+                    <li>
+                        <input type="text" />
+                    </li>
+
+                </ul>
+            </div>
+            <div>
+                Steps
+                <ol id="newSteps">
+                    <li>
+                        <input type="text" />
+                    </li>
+                    <li>
+                        <input type="text" />
+                    </li>
+                    <li>
+                        <input type="text" />
+                    </li>
+                    <li>
+                        <input type="text" />
+                    </li>
+                    <li>
+                        <input type="text" />
+                    </li>
+
+                </ol>
+            </div>
+        </div>
+        <br /><br />
+
+        <input type="button" class="button" value="Submit" id="btnSubmit">
+    </form>
+
+</body>
+</html>
